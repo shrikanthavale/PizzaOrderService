@@ -101,14 +101,14 @@ public class PizzaOrderGUI extends JFrame {
 		panel.add(panel_4, BorderLayout.SOUTH);
 		panel_4.setLayout(new GridLayout(0, 5, 0, 0));
 		
-		JButton btnNewButton_1 = new JButton("Search Details");
-		panel_4.add(btnNewButton_1);
+		JButton btnSearchDetails = new JButton("Search Details");
+		panel_4.add(btnSearchDetails);
 		
-		JButton btnNewButton = new JButton("Save Details");
-		panel_4.add(btnNewButton);
+		JButton btnSaveDetails = new JButton("Save Details");
+		panel_4.add(btnSaveDetails);
 		
-		JButton btnCancel = new JButton("Cancel Details");
-		panel_4.add(btnCancel);
+		JButton btnCancelDetails = new JButton("Cancel Details");
+		panel_4.add(btnCancelDetails);
 		
 		JButton btnResetDetails = new JButton("Reset Details");
 		panel_4.add(btnResetDetails);
