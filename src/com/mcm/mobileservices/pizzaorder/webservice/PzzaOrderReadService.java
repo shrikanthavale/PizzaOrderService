@@ -24,45 +24,11 @@ public class PzzaOrderReadService {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/readusername")
-	public String readListGames(@QueryParam("telephonenumber") String telephoneNumber) throws Exception {
+	public String readUserNameUsingTelephoneNumber(@QueryParam("telephonenumber") String telephoneNumber) throws Exception {
 
 		String username = sqlQueryFetchData.getUserNameFromTelephoneNumber(telephoneNumber);
 		return username;
 
 	}
 
-	/*
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/readgame")
-	public String readGame(@QueryParam("GameName") String gameName,
-			@QueryParam("EmailID") String emailID) {
-
-		List<ImageDetails> gameDetails = sqlQueryReadData.getGame(
-				gameName, emailID);
-
-		Gson gson = new Gson();
-		String gsonString = gson.toJson(gameDetails);
-
-		return gsonString;
-
-	}
-
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/readgamescores")
-	public String readGameScores(@QueryParam("GameID") String gameID,
-			@QueryParam("EmailID") String emailID,
-			@QueryParam("DifficultyLevel") String difficultyLevel) {
-
-		List<GameScores> gameScores = sqlQueryReadData.getGameScores(gameID,
-				emailID, difficultyLevel);
-
-		Gson gson = new Gson();
-		String gsonString = gson.toJson(gameScores);
-
-		return gsonString;
-
-	}
-
-*/}
+}
