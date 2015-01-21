@@ -20,13 +20,25 @@ import com.mcm.mobileservices.pizzaorder.database.SQLQueryFetchData;
 public class PzzaOrderReadService {
 
 	private SQLQueryFetchData sqlQueryFetchData = new SQLQueryFetchData();
-
+	
+	
+	/**
+	 * Web service accepts the telephone number and retrieves user name from database.
+	 * 
+	 * @param telephoneNumber - 10 digit telephone number
+	 * @return user name as string
+	 * @throws Exception - User not found exception is thrown if telephone number is not present in database.
+	 * 
+	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/readusername")
 	public String readUserNameUsingTelephoneNumber(@QueryParam("telephonenumber") String telephoneNumber) throws Exception {
 
+		// get the user name from telephone number
 		String username = sqlQueryFetchData.getUserNameFromTelephoneNumber(telephoneNumber);
+		
+		// return the user name
 		return username;
 
 	}

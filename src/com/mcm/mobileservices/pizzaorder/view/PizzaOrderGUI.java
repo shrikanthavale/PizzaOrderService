@@ -20,6 +20,7 @@ import javax.swing.border.TitledBorder;
 
 public class PizzaOrderGUI extends JFrame {
 
+	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTextField txtTelephoneNumber;
 	private JTextField txtNameOfPerson;
