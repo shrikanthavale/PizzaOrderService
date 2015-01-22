@@ -1,0 +1,117 @@
+/**
+ * 
+ */
+package com.mcm.mobileservices.pizzaorder.webservice;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+
+import com.mcm.mobileservices.pizzaorder.database.SQLQueryDataLayer;
+
+/**
+ * @author Shrikant Havale
+ * 
+ */
+
+@Path("/pizzaorder")
+public class PzzaOrderService {
+
+	/**
+	 * Fetch data layer - containing sql queries
+	 */
+	private SQLQueryDataLayer sqlQueryFetchData = new SQLQueryDataLayer();
+
+	/**
+	 * Web service accepts the telephone number and retrieves user name from
+	 * database.
+	 * 
+	 * @param telephoneNumber
+	 *            - 10 digit telephone number
+	 * @param sessionID
+	 *            - session ID created by VOXEO IVR system, this session id will
+	 *            be stored in dummy database to keep track of users progress
+	 *            throughout call.
+	 * @return user name as string
+	 * @throws Exception
+	 *             - User not found exception is thrown if telephone number is
+	 *             not present in database.
+	 * 
+	 */
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/readusername")
+	public String readUserNameUsingTelephoneNumber(
+			@QueryParam("telephonenumber") String telephoneNumber,
+			@QueryParam("sessionid") String sessionID) throws Exception {
+
+		// get the user name from telephone number
+		String username = sqlQueryFetchData
+				.getUserNameFromTelephoneNumber(telephoneNumber);
+
+		// return the user name
+		return username;
+
+	}
+
+	/**
+	 * Web service returns 5 active Pizzas from database, at a time not more
+	 * than 5 Pizzas are active.
+	 * 
+	 * @return string with comma separated and numbered pizzas
+	 * @throws Exception
+	 *             - for empty result set exception is thrown
+	 * 
+	 */
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/readfiveactivepizza")
+	public String read5ActivePizzas() throws Exception {
+
+		// get not more than 5 active pizza concatenated string
+		String pizzaConcatenatedCommaSeparated = sqlQueryFetchData
+				.read5ActivePizzas();
+
+		// return concatenated string of 5 pizzas
+		return pizzaConcatenatedCommaSeparated;
+
+	}
+
+	/**
+	 * Web service returns the pizza name from database. When user selects pizza
+	 * number using IVR application, and sends dummy ids (1, 2, 3, 4 , 5) and
+	 * along with session id, these details are checked in database and actual
+	 * ID of pizza is selected and its name is sent back.
+	 * 
+	 * @param dummyPizzaNumber
+	 *            - dummy pizza numbers are from 1-5, different than their
+	 *            actual IDs
+	 * @param session
+	 *            id - unique for each caller, when first call is made
+	 *            automatically a new entry with this session id is created in
+	 *            table.
+	 * 
+	 * @return pizza name
+	 * @throws Exception
+	 *             - for empty result set exception is thrown
+	 * 
+	 */
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/readpizzanameselectedbyuser")
+	public String readpizzanameselectedbyuser(
+			@QueryParam("pizzanumber") String dummyPizzaNumber,
+			@QueryParam("sessionid") String sessionID) throws Exception {
+
+		// get pizza name
+		String pizzaName = sqlQueryFetchData.readpizzanameselectedbyuser(
+				dummyPizzaNumber, sessionID);
+
+		// return pizza name of single pizza selected by user
+		return pizzaName;
+
+	}
+
+}

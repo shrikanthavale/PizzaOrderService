@@ -12,6 +12,8 @@ import java.sql.SQLException;
  * 
  */
 public class SQLConnectionDatabase {
+	
+	
 
 	public static Connection getConnection() throws Exception {
 
