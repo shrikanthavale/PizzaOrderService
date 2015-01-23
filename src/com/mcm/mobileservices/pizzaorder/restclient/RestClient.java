@@ -174,8 +174,12 @@ public class RestClient {
 	public static void main(String[] args) {
 		// String url =
 		// "http://tomcat7-shrikanthavale.rhcloud.com/PizzaOrderService/rest/pizzaorder/readusername?telephonenumber=12345678901";
-		String url = "http://localhost:8080/PizzaOrderService/rest/pizzaorder/readusername?telephonenumber=12345678901";
-		//http://localhost:8086/PizzaOrderService/rest/pizzaorder/readusername?telephonenumber=12345678901
+		// String url =
+		// "http://localhost:8086/PizzaOrderService/rest/pizzaorder/readusername?telephonenumber=1234567890&sessionid=dsadasdas";
+		// String url =
+		// "http://localhost:8086/PizzaOrderService/rest/pizzaorder/readfiveactivepizza?sessionid=dsadasdas";
+		String url = "http://localhost:8086/PizzaOrderService/rest/pizzaorder/readpizzanameselectedbyuser?sessionid=dsadasdas&pizzanumber=5";
+		// http://localhost:8086/PizzaOrderService/rest/pizzaorder/readusername?telephonenumber=12345678901
 
 		RestClient restClient = new RestClient(url);
 

@@ -12,15 +12,13 @@ import java.sql.SQLException;
  * 
  */
 public class SQLConnectionDatabase {
-	
-	
 
 	public static Connection getConnection() throws Exception {
 
 		try {
-			
+
 			String connectionURL = "jdbc:mysql://127.4.82.130:3306/PizzaOrder";
-			//String connectionURL = "jdbc:mysql://127.0.0.1:3306/PizzaOrder";
+			// String connectionURL = "jdbc:mysql://127.0.0.1:3306/PizzaOrder";
 			Connection connection = null;
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
 			connection = DriverManager.getConnection(connectionURL,

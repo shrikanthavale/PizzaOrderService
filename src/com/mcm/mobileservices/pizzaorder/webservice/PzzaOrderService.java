@@ -22,7 +22,7 @@ public class PzzaOrderService {
 	/**
 	 * Fetch data layer - containing sql queries
 	 */
-	private SQLQueryDataLayer sqlQueryFetchData = new SQLQueryDataLayer();
+	private SQLQueryDataLayer sqlQueryDataLayer = new SQLQueryDataLayer();
 
 	/**
 	 * Web service accepts the telephone number and retrieves user name from
@@ -47,9 +47,45 @@ public class PzzaOrderService {
 			@QueryParam("telephonenumber") String telephoneNumber,
 			@QueryParam("sessionid") String sessionID) throws Exception {
 
+		// this is first call to database, make sure session is established and
+		// stored in database
+		sqlQueryDataLayer.createSessionDetails(sessionID, telephoneNumber);
+
 		// get the user name from telephone number
-		String username = sqlQueryFetchData
+		String username = sqlQueryDataLayer
 				.getUserNameFromTelephoneNumber(telephoneNumber);
+
+		// return the user name
+		return username;
+
+	}
+
+	/**
+	 * Web service accepts the telephone number and retrieves user name from
+	 * database.
+	 * 
+	 * @param telephoneNumber
+	 *            - 10 digit telephone number
+	 * @param sessionID
+	 *            - session ID created by VOXEO IVR system, this session id will
+	 *            be stored in dummy database to keep track of users progress
+	 *            throughout call.
+	 * @return user name as string
+	 * @throws Exception
+	 *             - User not found exception is thrown if telephone number is
+	 *             not present in database.
+	 * 
+	 */
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/checkuserregistered")
+	public String checkUserRegistered(
+			@QueryParam("telephonenumber") String telephoneNumber,
+			@QueryParam("sessionid") String sessionID) throws Exception {
+
+		// get the user name from telephone number
+		String username = sqlQueryDataLayer.checkUserRegistered(
+				telephoneNumber, sessionID);
 
 		// return the user name
 		return username;
@@ -68,11 +104,12 @@ public class PzzaOrderService {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/readfiveactivepizza")
-	public String read5ActivePizzas() throws Exception {
+	public String read5ActivePizzas(@QueryParam("sessionid") String sessionID)
+			throws Exception {
 
 		// get not more than 5 active pizza concatenated string
-		String pizzaConcatenatedCommaSeparated = sqlQueryFetchData
-				.read5ActivePizzas();
+		String pizzaConcatenatedCommaSeparated = sqlQueryDataLayer
+				.read5ActivePizzas(sessionID);
 
 		// return concatenated string of 5 pizzas
 		return pizzaConcatenatedCommaSeparated;
@@ -106,7 +143,7 @@ public class PzzaOrderService {
 			@QueryParam("sessionid") String sessionID) throws Exception {
 
 		// get pizza name
-		String pizzaName = sqlQueryFetchData.readpizzanameselectedbyuser(
+		String pizzaName = sqlQueryDataLayer.readpizzanameselectedbyuser(
 				dummyPizzaNumber, sessionID);
 
 		// return pizza name of single pizza selected by user
