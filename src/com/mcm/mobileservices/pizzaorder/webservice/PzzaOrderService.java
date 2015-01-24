@@ -78,6 +78,38 @@ public class PzzaOrderService {
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/readuseraddress")
+	public String readAddressUsingTelephoneNumber(
+			@QueryParam("telephonenumber") String telephoneNumber)
+			throws Exception {
+
+		// get the user address from telephone number
+		String username = sqlQueryDataLayer
+				.readAddressUsingTelephoneNumber(telephoneNumber);
+
+		// return the user address
+		return username;
+
+	}
+
+	/**
+	 * Web service accepts the telephone number and retrieves user name from
+	 * database.
+	 * 
+	 * @param telephoneNumber
+	 *            - 10 digit telephone number
+	 * @param sessionID
+	 *            - session ID created by VOXEO IVR system, this session id will
+	 *            be stored in dummy database to keep track of users progress
+	 *            throughout call.
+	 * @return user name as string
+	 * @throws Exception
+	 *             - User not found exception is thrown if telephone number is
+	 *             not present in database.
+	 * 
+	 */
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/checkuserregistered")
 	public String checkUserRegistered(
 			@QueryParam("telephonenumber") String telephoneNumber,
@@ -138,16 +170,158 @@ public class PzzaOrderService {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/readpizzanameselectedbyuser")
-	public String readpizzanameselectedbyuser(
+	public String readPizzaNameSelectedbyUser(
 			@QueryParam("pizzanumber") String dummyPizzaNumber,
 			@QueryParam("sessionid") String sessionID) throws Exception {
 
 		// get pizza name
-		String pizzaName = sqlQueryDataLayer.readpizzanameselectedbyuser(
+		String pizzaName = sqlQueryDataLayer.readPizzaNameSelectedbyUser(
 				dummyPizzaNumber, sessionID);
 
 		// return pizza name of single pizza selected by user
 		return pizzaName;
+
+	}
+
+	/**
+	 * Web service returns the pizza details description and contents from
+	 * database. When user selects pizza number using IVR application, and sends
+	 * dummy ids (1, 2, 3, 4 , 5) and along with session id, these details are
+	 * checked in database and actual ID of pizza is selected and its details
+	 * are sent back so that they can be read for user.
+	 * 
+	 * @param dummyPizzaNumber
+	 *            - dummy pizza numbers are from 1-5, different than their
+	 *            actual IDs
+	 * @param session
+	 *            id - unique for each caller, when first call is made
+	 *            automatically a new entry with this session id is created in
+	 *            table.
+	 * 
+	 * @return selected pizza details, a big concatenated string
+	 * @throws Exception
+	 *             - for empty result set exception is thrown
+	 * 
+	 */
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/readpizzadetailsselectedbyuser")
+	public String readPizzaDetailsSelectedbyUser(
+			@QueryParam("pizzanumber") String dummyPizzaNumber,
+			@QueryParam("sessionid") String sessionID) throws Exception {
+
+		// get pizza name
+		String pizzaName = sqlQueryDataLayer.readPizzaDetailsSelectedbyUser(
+				dummyPizzaNumber, sessionID);
+
+		// return pizza name of single pizza selected by user
+		return pizzaName;
+
+	}
+
+	/**
+	 * Web service returns the pizza details description and contents from
+	 * database. When user selects pizza number using IVR application, and sends
+	 * dummy ids (1, 2, 3, 4 , 5) and along with session id, these details are
+	 * checked in database and actual ID of pizza is selected and its details
+	 * are sent back so that they can be read for user.
+	 * 
+	 * @param dummyPizzaNumber
+	 *            - dummy pizza numbers are from 1-5, different than their
+	 *            actual IDs
+	 * @param session
+	 *            id - unique for each caller, when first call is made
+	 *            automatically a new entry with this session id is created in
+	 *            table.
+	 * @param size
+	 *            size of the pizza selected to be added in basket
+	 * @param numberOfPizzas
+	 *            number of pizzas of that particular size to be added
+	 * 
+	 * @return a string success or failure exception
+	 * @throws Exception
+	 *             - for empty result set exception is thrown
+	 * 
+	 */
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/writepizzaaddedinbasket")
+	public String addPizzaInUsersBasket(
+			@QueryParam("pizzanumber") String dummyPizzaNumber,
+			@QueryParam("sessionid") String sessionID,
+			@QueryParam("size") String size,
+			@QueryParam("numberofpizzas") String numberOfPizzas)
+			throws Exception {
+
+		// Put in the
+		String successString = sqlQueryDataLayer.addPizzaInUsersBasket(
+				dummyPizzaNumber, sessionID, size, numberOfPizzas);
+
+		// return success string if everything is ok, or an exception is thrown
+		// automatically.
+		return successString;
+
+	}
+
+	/**
+	 * Web service returns the complete order for particular user and particular
+	 * session, based on the VOXEO session id
+	 * 
+	 * @param session
+	 *            id - unique for each caller, when first call is made
+	 *            automatically a new entry with this session id is created in
+	 *            table.
+	 * 
+	 * @return concatenated string of complete order for a particular user and
+	 *         particular session.
+	 * @throws Exception
+	 *             - for empty result set exception is thrown
+	 * 
+	 */
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/getfinalcompleteorder")
+	public String getFinalCompleteOrder(
+			@QueryParam("sessionid") String sessionID) throws Exception {
+
+		// Put in the
+		String completeOrderString = sqlQueryDataLayer
+				.getFinalCompleteOrder(sessionID);
+
+		// return success string if everything is ok, or an exception is thrown
+		// automatically.
+		return completeOrderString;
+
+	}
+
+	/**
+	 * Web service removes all the pizzas from the order for the current user
+	 * and current session. Allowing users to start fresh order in same call and
+	 * adding new pizzas.
+	 * 
+	 * @param session
+	 *            id - unique for each caller, when first call is made
+	 *            automatically a new entry with this session id is created in
+	 *            table.
+	 * 
+	 * @return success string if the basket was reseted successfully.
+	 * @throws Exception
+	 *             - for empty result set exception is thrown
+	 * 
+	 */
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/removeallpizzafrombasket")
+	public String removeAllPizzaFromBasket(
+			@QueryParam("sessionid") String sessionID) throws Exception {
+
+		// removes all pizza from basket, allowing user to start fresh
+		String successString = sqlQueryDataLayer
+				.removeAllPizzaFromBasket(sessionID);
+
+		// return success string if everything is ok, or an exception is thrown
+		// automatically.
+		return successString;
 
 	}
 

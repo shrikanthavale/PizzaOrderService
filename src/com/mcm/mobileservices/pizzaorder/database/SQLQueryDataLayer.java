@@ -82,6 +82,80 @@ public class SQLQueryDataLayer {
 		return userName;
 	}
 
+	/**
+	 * Method actually hitting database, and fetching user address using
+	 * telephone number.
+	 * 
+	 * @param telephoneNumber
+	 *            - 10 digit telephone number
+	 * @return user address as string
+	 * @throws Exception
+	 *             - Address not found is one of the exception, and also other
+	 *             exceptions.
+	 */
+	public String readAddressUsingTelephoneNumber(String telephoneNumber)
+			throws Exception {
+
+		// for storing user address
+		String userAddress = "";
+
+		try {
+
+			// get SQL connection
+			Connection sqlConnection = SQLConnectionDatabase.getConnection();
+
+			// select query for selecting user address from database by passing
+			// telephone number
+			PreparedStatement preparedStatement = sqlConnection
+					.prepareStatement("SELECT USERADDRESS FROM UserDetails WHERE TELEPHONENUMBER = ? ");
+
+			// set the telephone number
+			preparedStatement.setString(1, telephoneNumber);
+
+			// execute query
+			ResultSet resultSet = preparedStatement.executeQuery();
+
+			// check for empty result set
+			if (!resultSet.next()) {
+				throw new Exception("User Address Not Found");
+			}
+
+			// move the cursor before the result set
+			resultSet.beforeFirst();
+
+			// iterate through result set and get data
+			while (resultSet.next()) {
+				userAddress = resultSet.getString("USERADDRESS");
+			}
+
+			// close the connection
+			sqlConnection.close();
+
+		} catch (Exception exception) {
+			// print stack trace
+			exception.printStackTrace();
+
+			// re-throw exception
+			throw exception;
+		}
+
+		// return user name
+		return userAddress;
+	}
+
+	/**
+	 * This method checks if user is registered, this is called normally user
+	 * speaks with operator and registers himself. Once he is registered in
+	 * database, its session id can be mapped to his telephone number
+	 * 
+	 * @param telephoneNumber
+	 *            telephone number
+	 * @param sessionID
+	 *            call id given by VOXEO, remains fix through out call.
+	 * @return user name for telephone number
+	 * @throws Exception
+	 *             User not found exception
+	 */
 	public String checkUserRegistered(String telephoneNumber, String sessionID)
 			throws Exception {
 
@@ -221,9 +295,6 @@ public class SQLQueryDataLayer {
 	 * along with session id, these details are checked in database and actual
 	 * ID of pizza selected is found and its name is sent back.
 	 * 
-	 * @param sessionID
-	 * @param dummyPizzaNumber
-	 * 
 	 * @param dummyPizzaNumber
 	 *            - dummy pizza numbers are from 1-5, different than their
 	 *            actual IDs
@@ -237,7 +308,7 @@ public class SQLQueryDataLayer {
 	 *             - for empty result set exception is thrown
 	 * 
 	 */
-	public String readpizzanameselectedbyuser(String dummyPizzaNumber,
+	public String readPizzaNameSelectedbyUser(String dummyPizzaNumber,
 			String sessionID) throws Exception {
 
 		// pizza name to be returned
@@ -289,6 +360,93 @@ public class SQLQueryDataLayer {
 		return pizzaName;
 	}
 
+	/**
+	 * method returns the pizza details description and its content as
+	 * concatenated string from database. When user selects pizza number using
+	 * IVR application, and sends dummy ids (1, 2, 3, 4 , 5) and along with
+	 * session id, these details are checked in database and actual ID of pizza
+	 * selected is found and its details are sent back.
+	 * 
+	 * @param dummyPizzaNumber
+	 *            - dummy pizza numbers are from 1-5, different than their
+	 *            actual IDs
+	 * @param session
+	 *            id - unique for each caller, when first call is made
+	 *            automatically a new entry with this session id is created in
+	 *            table.
+	 * 
+	 * @return pizza details concatenated string
+	 * @throws Exception
+	 *             - for empty result set exception is thrown
+	 * 
+	 */
+	public String readPizzaDetailsSelectedbyUser(String dummyPizzaNumber,
+			String sessionID) throws Exception {
+
+		// pizza details to be returned
+		String pizzaDetails = "";
+
+		try {
+
+			// get SQL connection
+			Connection sqlConnection = SQLConnectionDatabase.getConnection();
+
+			// select query for getting pizza details based on session details
+			// and dummypizzaid sent by user
+			PreparedStatement preparedStatement = sqlConnection
+					.prepareStatement("SELECT PIZZADESCRIPTION, PIZZACONTENT FROM PizzaDetails WHERE PIZZAID IN ( "
+							+ " SELECT PIZZAID FROM PizzaTransactions WHERE TRANSACTIONID = '"
+							+ sessionID
+							+ "' AND pizzadummyid = "
+							+ dummyPizzaNumber + ")");
+
+			// execute query
+			ResultSet resultSet = preparedStatement.executeQuery();
+
+			// check for empty result set
+			if (!resultSet.next()) {
+				throw new Exception(
+						"Pizza Name not applicable for this session");
+			}
+
+			// move the cursor before the result set
+			resultSet.beforeFirst();
+
+			// iterate through result set and get data
+			while (resultSet.next()) {
+				pizzaDetails = resultSet.getString("PIZZADESCRIPTION");
+				pizzaDetails = pizzaDetails + " And the contents are "
+						+ resultSet.getString("PIZZACONTENT");
+
+			}
+
+			// close the connection
+			sqlConnection.close();
+
+		} catch (Exception exception) {
+			// print stack trace
+			exception.printStackTrace();
+
+			// re-throw exception
+			throw exception;
+		}
+
+		// return concatenated string
+		return pizzaDetails;
+	}
+
+	/**
+	 * When the call is made first time, user session is created and stored in
+	 * database,These session details are updated as call progress with pizza
+	 * being added or removed
+	 * 
+	 * @param sessionID
+	 *            - callid from voxeo
+	 * @param telephoneNumber
+	 *            - telephone number of user
+	 * @throws Exception
+	 *             - exception if session details cannot be stored
+	 */
 	public void createSessionDetails(String sessionID, String telephoneNumber)
 			throws Exception {
 
@@ -343,6 +501,14 @@ public class SQLQueryDataLayer {
 
 	}
 
+	/**
+	 * Once the user is registered, only update his telephone number in session
+	 * details.
+	 * 
+	 * @param telephoneNumber
+	 * @param sessionID
+	 * @throws Exception
+	 */
 	public void updateSessionDetailsTelephoneNumber(String telephoneNumber,
 			String sessionID) throws Exception {
 
@@ -356,7 +522,7 @@ public class SQLQueryDataLayer {
 					.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
 							ResultSet.CONCUR_UPDATABLE);
 
-			// insert queries
+			// update query
 			String updateQuery = "UPDATE PizzaTransactions SET TELEPHONENUMBER = '"
 					+ telephoneNumber + "' WHERE transactionid = '" + sessionID;
 
@@ -376,6 +542,19 @@ public class SQLQueryDataLayer {
 
 	}
 
+	/**
+	 * Update session details with specific pizza names and dummy numbers id for
+	 * the particular customer and session. These later will help in getting
+	 * details only from this table.
+	 * 
+	 * @param tempHashMap
+	 *            - Hash map containing actual pizza id of 5 pizzas sent to
+	 *            user, their dummy ids and and their names
+	 * @param sessionID
+	 *            - callid given by Voxeo
+	 * @throws Exception
+	 *             - exception if any generated during updating session details.
+	 */
 	public void updateSessionDetailsPizzaNames(
 			Map<Integer, String> tempHashMap, String sessionID)
 			throws Exception {
@@ -399,7 +578,7 @@ public class SQLQueryDataLayer {
 				String pizzaName = tempHashMap.get(temp).split(":")[1];
 				String pizzaDummyID = tempHashMap.get(temp).split(":")[0];
 
-				// insert queries
+				// udpate queries
 				String updateQuery = "UPDATE PizzaTransactions SET PIZZANAME = '"
 						+ pizzaName
 						+ "', PIZZAID = "
@@ -429,6 +608,249 @@ public class SQLQueryDataLayer {
 			// re-throw exception
 			throw exception;
 		}
+
+	}
+
+	/**
+	 * Adds the pizza to the basket, in transaction details table across the
+	 * session and user who is currently making a call. Number of pizzas and
+	 * their sizes are added in the transaction table across the users session.
+	 * 
+	 * @param dummyPizzaNumber
+	 *            - temporary pizza number from 1-5 as selected by user in VOXEO
+	 * @param sessionID
+	 *            - call id from VOXOE
+	 * @param size
+	 *            - size can take 3 values , small, medium and large, will be
+	 *            added accordingly in database.
+	 * @param numberOfPizzas
+	 *            - number of pizza of that particular dummy number and that
+	 *            particular size for that particular session
+	 * 
+	 * @return success message or exception is thrown if anything goes wrong,
+	 *         which is accordingly handled in VOXEO
+	 * @throws Exception
+	 *             if something goes wrong
+	 */
+	public String addPizzaInUsersBasket(String dummyPizzaNumber,
+			String sessionID, String size, String numberOfPizzas)
+			throws Exception {
+
+		try {
+
+			// get SQL connection
+			Connection sqlConnection = SQLConnectionDatabase.getConnection();
+
+			// size column to be updated
+			String sizeColumn = "";
+
+			// create statement
+			Statement statement = sqlConnection
+					.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+							ResultSet.CONCUR_UPDATABLE);
+
+			// decide which column to update
+			if (size != null) {
+
+				if (("small").equals(size)) {
+					sizeColumn = "SMALLSIZE";
+				} else if (("medium").equals(size)) {
+					sizeColumn = "MEDIUMSIZE";
+				} else if (("large").equals(size)) {
+					sizeColumn = "LARGESIZE";
+				}
+
+			}
+
+			// set auto commit false
+			sqlConnection.setAutoCommit(false);
+
+			// update queries
+			String updateQuery = "UPDATE PizzaTransactions SET " + sizeColumn
+					+ " = " + numberOfPizzas + "  WHERE transactionid = '"
+					+ sessionID + "' AND pizzadummyid = " + dummyPizzaNumber;
+
+			// add queries
+			statement.addBatch(updateQuery);
+
+			// execute batch
+			statement.executeBatch();
+
+			// commit
+			sqlConnection.commit();
+
+			// close the connection
+			sqlConnection.close();
+
+		} catch (Exception exception) {
+			// print stack trace
+			exception.printStackTrace();
+
+			// re-throw exception
+			throw exception;
+		}
+
+		return "success";
+
+	}
+
+	/**
+	 * Method actual connects to transaction table, and gets the complete final
+	 * order of , so it can be repeated to user using VOXEO services
+	 * 
+	 * @param sessionID
+	 *            - users current call session id
+	 * 
+	 * @return complete concatenated string which can directly used in VOXEO for
+	 *         complete order of user
+	 * @throws Exception
+	 *             something goes wrong exception is thrown to VOXEO where it is
+	 *             handled appropriately
+	 */
+	public String getFinalCompleteOrder(String sessionID) throws Exception {
+
+		// pizza name to be returned
+		String completeFinalOrder = "";
+
+		try {
+
+			// get SQL connection
+			Connection sqlConnection = SQLConnectionDatabase.getConnection();
+
+			// select query for getting pizza name based on session details and
+			// dummypizzaid sent by user
+			PreparedStatement preparedStatement = sqlConnection
+					.prepareStatement("SELECT PIZZANAME, SMALLSIZE, MEDIUMSIZE, LARGESIZE FROM PizzaTransactions WHERE transactionid = '"
+							+ sessionID + "'");
+
+			// execute query
+			ResultSet resultSet = preparedStatement.executeQuery();
+
+			// check for empty result set
+			if (!resultSet.next()) {
+				throw new Exception(
+						"Pizza Name not applicable for this session");
+			}
+
+			// move the cursor before the result set
+			resultSet.beforeFirst();
+
+			// counter
+			int counter = 1;
+
+			// iterate through result set and get data
+			while (resultSet.next()) {
+				String pizzaName = resultSet.getString("PIZZANAME");
+				Integer smallSizePizzaNumbers = resultSet.getInt("SMALLSIZE");
+				Integer mediumSizePizzaNumbers = resultSet.getInt("MEDIUMSIZE");
+				Integer largeSizePizzaNumbers = resultSet.getInt("LARGESIZE");
+
+				// check if no pizzas of this type were ordered
+				if (smallSizePizzaNumbers == 0 && mediumSizePizzaNumbers == 0
+						&& largeSizePizzaNumbers == 0) {
+					continue;
+				}
+
+				completeFinalOrder = completeFinalOrder + counter + ". "
+						+ pizzaName + " - ";
+
+				// check small
+				if (smallSizePizzaNumbers != 0) {
+					completeFinalOrder = completeFinalOrder
+							+ smallSizePizzaNumbers + " SMALL, ";
+				}
+
+				// check medium
+				if (mediumSizePizzaNumbers != 0) {
+					completeFinalOrder = completeFinalOrder
+							+ mediumSizePizzaNumbers + " MEDIUM, ";
+
+				}
+
+				// check large
+				if (largeSizePizzaNumbers != 0) {
+					completeFinalOrder = completeFinalOrder
+							+ largeSizePizzaNumbers + " LARGE, ";
+
+				}
+
+				// concatenate everything
+				completeFinalOrder = completeFinalOrder + "\n";
+
+				counter = counter + 1;
+
+			}
+
+			// close the connection
+			sqlConnection.close();
+
+		} catch (Exception exception) {
+			// print stack trace
+			exception.printStackTrace();
+
+			// re-throw exception
+			throw exception;
+		}
+
+		// return concatenated string
+		return completeFinalOrder;
+	}
+
+	/**
+	 * Web service removes all the pizzas from the order for the current user
+	 * and current session. Allowing users to start fresh order in same call and
+	 * adding new pizzas.
+	 * 
+	 * @param session
+	 *            id - unique for each caller, when first call is made
+	 *            automatically a new entry with this session id is created in
+	 *            table.
+	 * 
+	 * @return success string if the basket was reseted successfully.
+	 * @throws Exception
+	 *             - for empty result set exception is thrown
+	 * 
+	 */
+	public String removeAllPizzaFromBasket(String sessionID) throws Exception {
+
+		try {
+
+			// get SQL connection
+			Connection sqlConnection = SQLConnectionDatabase.getConnection();
+
+			// create statement
+			Statement statement = sqlConnection
+					.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+							ResultSet.CONCUR_UPDATABLE);
+
+			// set auto commit false
+			sqlConnection.setAutoCommit(false);
+
+			// update query
+			String updateQuery = "UPDATE PizzaTransactions SET SMALLSIZE = NULL, MEDIUMSIZE = NULL, LARGESIZE = NULL WHERE transactionid = '"
+					+ sessionID + "'";
+
+			// add queries
+			statement.addBatch(updateQuery);
+
+			// execute batch
+			statement.executeBatch();
+
+			// commit
+			sqlConnection.commit();
+
+			// close the connection
+			sqlConnection.close();
+
+		} catch (Exception exception) {
+			// print stack trace
+			exception.printStackTrace();
+
+			// re-throw exception
+			throw exception;
+		}
+
+		return "success";
 
 	}
 
