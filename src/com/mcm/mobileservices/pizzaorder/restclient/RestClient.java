@@ -182,13 +182,13 @@ public class RestClient {
 		// "http://localhost:8086/PizzaOrderService/rest/pizzaorder/readpizzanameselectedbyuser?sessionid=2bc6777a-251e-407f-b8ee-d3ecf4616ed1&pizzanumber=5";
 		// String url =
 		// "http://localhost:8086/PizzaOrderService/rest/pizzaorder/readpizzadetailsselectedbyuser?sessionid=2bc6777a-251e-407f-b8ee-d3ecf4616ed1&pizzanumber=5";
-		// String url =
-		// "http://localhost:8086/PizzaOrderService/rest/pizzaorder/writepizzaaddedinbasket?sessionid=2bc6777a-251e-407f-b8ee-d3ecf4616ed1&pizzanumber=4&size=large&numberofpizzas=5";
+		String url = "http://localhost:8086/PizzaOrderService/rest/pizzaorder/writepizzaaddedinbasket?sessionid=2bc6777a-251e-407f-b8ee-d3ecf4616ed1&pizzanumber=4&size=large&numberofpizzas=5";
 		// String url =
 		// "http://localhost:8086/PizzaOrderService/rest/pizzaorder/getfinalcompleteorder?sessionid=2bc6777a-251e-407f-b8ee-d3ecf4616ed1";
 		// String url =
 		// "http://localhost:8086/PizzaOrderService/rest/pizzaorder/readuseraddress?telephonenumber=1234567890";
-		String url = "http://localhost:8086/PizzaOrderService/rest/pizzaorder/removeallpizzafrombasket?sessionid=2bc6777a-251e-407f-b8ee-d3ecf4616ed1";
+		// String url =
+		// "http://localhost:8086/PizzaOrderService/rest/pizzaorder/removeallpizzafrombasket?sessionid=2bc6777a-251e-407f-b8ee-d3ecf4616ed1";
 		// http://localhost:8086/PizzaOrderService/rest/pizzaorder/readusername?telephonenumber=12345678901
 
 		RestClient restClient = new RestClient(url);

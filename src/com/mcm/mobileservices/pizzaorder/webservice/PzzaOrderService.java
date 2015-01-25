@@ -53,7 +53,7 @@ public class PzzaOrderService {
 
 		// get the user name from telephone number
 		String username = sqlQueryDataLayer
-				.getUserNameFromTelephoneNumber(telephoneNumber);
+				.readUserNameFromTelephoneNumber(telephoneNumber);
 
 		// return the user name
 		return username;
@@ -281,12 +281,12 @@ public class PzzaOrderService {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/getfinalcompleteorder")
-	public String getFinalCompleteOrder(
+	public String readFinalCompleteOrder(
 			@QueryParam("sessionid") String sessionID) throws Exception {
 
 		// Put in the
 		String completeOrderString = sqlQueryDataLayer
-				.getFinalCompleteOrder(sessionID);
+				.readFinalCompleteOrder(sessionID);
 
 		// return success string if everything is ok, or an exception is thrown
 		// automatically.

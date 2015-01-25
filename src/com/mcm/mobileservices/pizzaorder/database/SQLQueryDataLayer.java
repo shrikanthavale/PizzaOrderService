@@ -32,7 +32,7 @@ public class SQLQueryDataLayer {
 	 *             - User not found is one of the exception, and also other
 	 *             exceptions.
 	 */
-	public String getUserNameFromTelephoneNumber(String telephoneNumber)
+	public String readUserNameFromTelephoneNumber(String telephoneNumber)
 			throws Exception {
 
 		// for storing user name
@@ -415,7 +415,7 @@ public class SQLQueryDataLayer {
 			// iterate through result set and get data
 			while (resultSet.next()) {
 				pizzaDetails = resultSet.getString("PIZZADESCRIPTION");
-				pizzaDetails = pizzaDetails + " And the contents are "
+				pizzaDetails = pizzaDetails + " And the contents are, "
 						+ resultSet.getString("PIZZACONTENT");
 
 			}
@@ -662,6 +662,28 @@ public class SQLQueryDataLayer {
 
 			}
 
+			// select query for selecting user name from database by passing
+			// telephone number
+			PreparedStatement preparedStatement = sqlConnection
+					.prepareStatement("SELECT " + sizeColumn
+							+ " FROM PizzaTransactions  "
+							+ " WHERE transactionid = '" + sessionID
+							+ "' AND pizzadummyid = " + dummyPizzaNumber);
+
+			// execute query
+			ResultSet resultSet = preparedStatement.executeQuery();
+
+			// previous pizzas
+			int previousPizzaNumber = 0;
+
+			// iterate through result set and get data
+			while (resultSet.next()) {
+				previousPizzaNumber = resultSet.getInt(sizeColumn);
+			}
+
+			numberOfPizzas = (Integer.parseInt(numberOfPizzas) + previousPizzaNumber)
+					+ "";
+
 			// set auto commit false
 			sqlConnection.setAutoCommit(false);
 
@@ -707,7 +729,7 @@ public class SQLQueryDataLayer {
 	 *             something goes wrong exception is thrown to VOXEO where it is
 	 *             handled appropriately
 	 */
-	public String getFinalCompleteOrder(String sessionID) throws Exception {
+	public String readFinalCompleteOrder(String sessionID) throws Exception {
 
 		// pizza name to be returned
 		String completeFinalOrder = "";
