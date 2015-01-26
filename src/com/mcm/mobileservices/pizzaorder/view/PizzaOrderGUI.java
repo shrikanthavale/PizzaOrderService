@@ -40,6 +40,7 @@ public class PizzaOrderGUI extends JFrame implements Observer {
 	private JButton btnSaveDetails;
 	private JButton btnSearchDetails;
 	private JButton btnUpdateDetails;
+	
 
 	/**
 	 * Launch the application.
