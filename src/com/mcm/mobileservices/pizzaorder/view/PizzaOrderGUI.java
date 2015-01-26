@@ -13,6 +13,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -40,7 +41,7 @@ public class PizzaOrderGUI extends JFrame implements Observer {
 	private JButton btnSaveDetails;
 	private JButton btnSearchDetails;
 	private JButton btnUpdateDetails;
-	
+	private JTextField txtPizzaName;
 
 	/**
 	 * Launch the application.
@@ -82,17 +83,18 @@ public class PizzaOrderGUI extends JFrame implements Observer {
 		JPanel panel = new JPanel();
 		panel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null,
 				null));
-		tabbedPane.addTab("Contact Details", null, panel, null);
+		tabbedPane.addTab("User Details", null, panel, null);
 		panel.setLayout(new BorderLayout(0, 0));
 
-		JLabel lblViewUpdate = new JLabel("View & Update Contact Details");
-		lblViewUpdate.setHorizontalAlignment(SwingConstants.CENTER);
-		lblViewUpdate.setFont(new Font("Tahoma", Font.BOLD, 30));
-		panel.add(lblViewUpdate, BorderLayout.NORTH);
+		JLabel lblViewUpdateUserDetails = new JLabel(
+				"View & Update User Details");
+		lblViewUpdateUserDetails.setHorizontalAlignment(SwingConstants.CENTER);
+		lblViewUpdateUserDetails.setFont(new Font("Tahoma", Font.BOLD, 30));
+		panel.add(lblViewUpdateUserDetails, BorderLayout.NORTH);
 
 		JPanel panel_3 = new JPanel();
 		panel_3.setBorder(new TitledBorder(new EtchedBorder(
-				EtchedBorder.LOWERED, null, null), "Contact Details",
+				EtchedBorder.LOWERED, null, null), "User Details",
 				TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panel.add(panel_3, BorderLayout.CENTER);
 		panel_3.setLayout(new GridLayout(3, 2, 10, 10));
@@ -222,6 +224,95 @@ public class PizzaOrderGUI extends JFrame implements Observer {
 
 		JPanel panel_1 = new JPanel();
 		tabbedPane.addTab("Pizza Details", null, panel_1, null);
+		panel_1.setLayout(new BorderLayout(0, 0));
+
+		JLabel lblViewUpdatePizzaDetails = new JLabel(
+				"View & Update Pizza Details");
+		lblViewUpdatePizzaDetails.setHorizontalAlignment(SwingConstants.CENTER);
+		lblViewUpdatePizzaDetails.setFont(new Font("Tahoma", Font.BOLD, 30));
+		panel_1.add(lblViewUpdatePizzaDetails, BorderLayout.NORTH);
+
+		JPanel panel_5 = new JPanel();
+		panel_5.setBorder(new TitledBorder(null, "Pizza Details",
+				TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel_1.add(panel_5, BorderLayout.CENTER);
+		panel_5.setLayout(new GridLayout(4, 2, 10, 10));
+
+		JLabel lblNewLabel = new JLabel("Pizza Name");
+		panel_5.add(lblNewLabel);
+
+		txtPizzaName = new JTextField();
+		txtPizzaName.setText("Pizza Name");
+		panel_5.add(txtPizzaName);
+		txtPizzaName.setColumns(10);
+
+		JLabel lblNewLabel_1 = new JLabel("Pizza Description");
+		panel_5.add(lblNewLabel_1);
+
+		JTextArea txtrPizzaDescription = new JTextArea();
+		txtrPizzaDescription.setWrapStyleWord(true);
+		txtrPizzaDescription.setLineWrap(true);
+		txtrPizzaDescription.setText("Pizza Description");
+		panel_5.add(txtrPizzaDescription);
+
+		JLabel lblPizzaContents = new JLabel("Pizza Contents");
+		panel_5.add(lblPizzaContents);
+
+		JTextArea txtrPizzaContents = new JTextArea();
+		txtrPizzaContents.setLineWrap(true);
+		txtrPizzaContents.setWrapStyleWord(true);
+		txtrPizzaContents.setText("Pizza Contents");
+		panel_5.add(txtrPizzaContents);
+
+		JLabel lblPizzaActive = new JLabel("Pizza Active");
+		panel_5.add(lblPizzaActive);
+
+		JCheckBox chckbxPizzaActive = new JCheckBox("");
+		panel_5.add(chckbxPizzaActive);
+
+		JPanel panel_6 = new JPanel();
+		panel_1.add(panel_6, BorderLayout.SOUTH);
+		GridBagLayout gbl_panel_6 = new GridBagLayout();
+		gbl_panel_6.columnWidths = new int[] { 207, 207, 207, 0 };
+		gbl_panel_6.rowHeights = new int[] { 23, 23, 0 };
+		gbl_panel_6.columnWeights = new double[] { 0.0, 0.0, 0.0,
+				Double.MIN_VALUE };
+		gbl_panel_6.rowWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
+		panel_6.setLayout(gbl_panel_6);
+
+		JButton btnSearchPizza = new JButton("Search Pizza");
+		GridBagConstraints gbc_btnSearchPizza = new GridBagConstraints();
+		gbc_btnSearchPizza.fill = GridBagConstraints.BOTH;
+		gbc_btnSearchPizza.insets = new Insets(0, 0, 5, 5);
+		gbc_btnSearchPizza.gridx = 0;
+		gbc_btnSearchPizza.gridy = 0;
+		panel_6.add(btnSearchPizza, gbc_btnSearchPizza);
+
+		JButton btnSavePizza = new JButton("Save Pizza");
+		GridBagConstraints gbc_btnSavePizza = new GridBagConstraints();
+		gbc_btnSavePizza.fill = GridBagConstraints.BOTH;
+		gbc_btnSavePizza.insets = new Insets(0, 0, 5, 5);
+		gbc_btnSavePizza.gridx = 1;
+		gbc_btnSavePizza.gridy = 0;
+		panel_6.add(btnSavePizza, gbc_btnSavePizza);
+
+		JButton btnUpdatePizza = new JButton("Update Pizza");
+		GridBagConstraints gbc_btnUpdatePizza = new GridBagConstraints();
+		gbc_btnUpdatePizza.fill = GridBagConstraints.BOTH;
+		gbc_btnUpdatePizza.insets = new Insets(0, 0, 5, 0);
+		gbc_btnUpdatePizza.gridx = 2;
+		gbc_btnUpdatePizza.gridy = 0;
+		panel_6.add(btnUpdatePizza, gbc_btnUpdatePizza);
+
+		JLabel label = new JLabel("");
+		label.setHorizontalAlignment(SwingConstants.CENTER);
+		GridBagConstraints gbc_label = new GridBagConstraints();
+		gbc_label.insets = new Insets(0, 0, 0, 5);
+		gbc_label.fill = GridBagConstraints.BOTH;
+		gbc_label.gridwidth = 3;
+		gbc_label.gridx = 0;
+		gbc_label.gridy = 1;
+		panel_6.add(label, gbc_label);
 
 		JPanel panel_2 = new JPanel();
 		panel_2.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null,
