@@ -111,7 +111,7 @@ public class PizzaOrderController extends Observable {
 		String gsonString = gson.toJson(userDetails);
 
 		// create rest client
-		RestClient restClient = new RestClient(dummyURL);
+		RestClient restClient = new RestClient(url);
 
 		// send the json string to webservice
 		restClient.AddParam("userdetails", gsonString);
