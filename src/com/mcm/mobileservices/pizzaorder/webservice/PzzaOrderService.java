@@ -9,7 +9,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import com.google.gson.Gson;
 import com.mcm.mobileservices.pizzaorder.database.SQLQueryDataLayer;
+import com.mcm.mobileservices.pizzaorder.entities.UserDetails;
 
 /**
  * @author Shrikant Havale
@@ -322,6 +324,91 @@ public class PzzaOrderService {
 		// return success string if everything is ok, or an exception is thrown
 		// automatically.
 		return successString;
+
+	}
+
+	/**
+	 * web service for saving user details in database.
+	 * 
+	 * @param userDetailsJsonString
+	 *            user object specifically formatted in JSON format
+	 * 
+	 * @return returned JSON string of saved object
+	 * 
+	 */
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/saveuserdetails")
+	public String saveUserDetails(
+			@QueryParam("userdetails") String userDetailsJsonString) {
+
+		// convert to object
+		Gson gson = new Gson();
+		UserDetails userDetailsObject = gson.fromJson(userDetailsJsonString,
+				UserDetails.class);
+
+		UserDetails userDetailsReturnedObject = sqlQueryDataLayer
+				.saveUserDetails(userDetailsObject);
+
+		// return success string if everything is ok, or an exception is thrown
+		// automatically.
+		return gson.toJson(userDetailsReturnedObject);
+
+	}
+
+	/**
+	 * web service for searching user details in database.
+	 * 
+	 * @param telephoneNumber
+	 *            user object specifically formatted in JSON format
+	 * 
+	 * @return returned JSON string of saved object
+	 * 
+	 */
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/searchuserdetails")
+	public String searchUserDetails(
+			@QueryParam("telephonenumber") String telephoneNumber) {
+
+		// convert to object
+		Gson gson = new Gson();
+
+		UserDetails userDetailsReturnedObject = sqlQueryDataLayer
+				.searchUserDetails(telephoneNumber);
+
+		// return success string if everything is ok, or an exception is thrown
+		// automatically.
+		return gson.toJson(userDetailsReturnedObject);
+
+	}
+
+	/**
+	 * web service for updating user details in database.
+	 * 
+	 * @param userDetailsJsonString
+	 *            user object specifically formatted in JSON format
+	 * 
+	 * @return returned JSON string of updated object
+	 * 
+	 */
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/updateuserdetails")
+	public String updateUserDetails(
+			@QueryParam("userdetails") String userDetailsJsonString) {
+
+		// convert to object
+		Gson gson = new Gson();
+		UserDetails userDetailsObject = gson.fromJson(userDetailsJsonString,
+				UserDetails.class);
+
+		UserDetails userDetailsReturnedObject = sqlQueryDataLayer
+				.updateUserDetails(userDetailsObject);
+
+		// return success string if everything is ok, or an exception is thrown
+		// automatically.
+		return gson.toJson(userDetailsReturnedObject);
 
 	}
 

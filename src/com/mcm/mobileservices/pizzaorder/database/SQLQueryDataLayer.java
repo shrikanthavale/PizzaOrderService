@@ -10,6 +10,8 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.mcm.mobileservices.pizzaorder.entities.UserDetails;
+
 /**
  * This class contains the method actually fetching data from the database using
  * "Select" queries. It only has all read queries and contains several different
@@ -524,10 +526,22 @@ public class SQLQueryDataLayer {
 
 			// update query
 			String updateQuery = "UPDATE PizzaTransactions SET TELEPHONENUMBER = '"
-					+ telephoneNumber + "' WHERE transactionid = '" + sessionID;
+					+ telephoneNumber
+					+ "' WHERE transactionid = '"
+					+ sessionID
+					+ "'";
 
-			// execute query
-			statement.executeQuery(updateQuery);
+			// set auto commit false
+			sqlConnection.setAutoCommit(false);
+
+			// add queries
+			statement.addBatch(updateQuery);
+
+			// execute batch
+			statement.executeBatch();
+
+			// commit
+			sqlConnection.commit();
 
 			// close the connection
 			sqlConnection.close();
@@ -876,4 +890,196 @@ public class SQLQueryDataLayer {
 
 	}
 
+	/**
+	 * Method actually hitting database and saving user details in database.
+	 * 
+	 * @param userDetailsObject
+	 *            - Object sent from UI, originally in JSON converted to entity
+	 *            format
+	 * @return the same object if saving is succeeded
+	 */
+	public UserDetails saveUserDetails(UserDetails userDetailsObject) {
+
+		try {
+
+			// get SQL connection
+			Connection sqlConnection = SQLConnectionDatabase.getConnection();
+
+			// insert queries
+			String insertQuery = "INSERT INTO UserDetails (username,telephonenumber,useraddress) VALUES ( '"
+					+ userDetailsObject.getUserName()
+					+ "' , '"
+					+ userDetailsObject.getTelephoneNumber()
+					+ "' ,  '"
+					+ userDetailsObject.getUserAddress() + "' )";
+
+			// create statement
+			Statement statement = sqlConnection
+					.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+							ResultSet.CONCUR_UPDATABLE);
+
+			// set auto commit false
+			sqlConnection.setAutoCommit(false);
+
+			// add queries
+			statement.addBatch(insertQuery);
+
+			// execute batch
+			statement.executeBatch();
+
+			// commit
+			sqlConnection.commit();
+
+			// close the connection
+			sqlConnection.close();
+
+			// user successfully registered
+			userDetailsObject.setMessage("User Successfully Registered");
+
+		} catch (Exception exception) {
+
+			// set error message
+			userDetailsObject.setMessage(exception.getMessage());
+
+			// print stack trace
+			exception.printStackTrace();
+
+		}
+
+		return userDetailsObject;
+
+	}
+
+	/**
+	 * Method actually hitting database and searching user details in database.
+	 * 
+	 * @param telephoneNumber
+	 *            - string telephone number sent from UI, to check if user is in
+	 *            database details and fetch its details
+	 * @return the same object if searching is succeeded
+	 */
+	public UserDetails searchUserDetails(String telephoneNumber) {
+
+		// for returning userdetails
+		UserDetails userDetails = new UserDetails();
+		userDetails.setTelephoneNumber(telephoneNumber);
+		userDetails.setUserName("");
+		userDetails.setUserAddress("");
+
+		try {
+
+			// get SQL connection
+			Connection sqlConnection = SQLConnectionDatabase.getConnection();
+
+			// select query for selecting user name from database by passing
+			// telephone number
+			PreparedStatement preparedStatement = sqlConnection
+					.prepareStatement("SELECT USERNAME,TELEPHONENUMBER,USERADDRESS FROM UserDetails WHERE TELEPHONENUMBER = ? ");
+
+			// set the telephone number
+			preparedStatement.setString(1, telephoneNumber);
+
+			// execute query
+			ResultSet resultSet = preparedStatement.executeQuery();
+
+			// check for empty result set
+			if (!resultSet.next()) {
+				userDetails.setMessage("User is not registered.");
+				return userDetails;
+			}
+
+			// move the cursor before the result set
+			resultSet.beforeFirst();
+
+			// iterate through result set and get data
+			while (resultSet.next()) {
+				userDetails.setUserName(resultSet.getString("USERNAME"));
+				userDetails.setUserAddress(resultSet.getString("USERADDRESS"));
+			}
+
+			// close the connection
+			sqlConnection.close();
+
+			// user found
+			userDetails.setMessage("User Details Found.");
+
+		} catch (Exception exception) {
+			// print stack trace
+			exception.printStackTrace();
+
+			// set error message
+			userDetails.setMessage(exception.getMessage());
+		}
+
+		// return user details
+		return userDetails;
+	}
+
+	public UserDetails updateUserDetails(UserDetails userDetailsObject) {
+
+		try {
+
+			// get SQL connection
+			Connection sqlConnection = SQLConnectionDatabase.getConnection();
+
+			// select query for selecting user name from database by passing
+			// telephone number
+			PreparedStatement preparedStatement = sqlConnection
+					.prepareStatement("SELECT USERNAME,TELEPHONENUMBER,USERADDRESS FROM UserDetails WHERE TELEPHONENUMBER = ? ");
+
+			// set the telephone number
+			preparedStatement.setString(1,
+					userDetailsObject.getTelephoneNumber());
+
+			// execute query
+			ResultSet resultSet = preparedStatement.executeQuery();
+
+			// check for empty result set
+			if (!resultSet.next()) {
+				userDetailsObject
+						.setMessage("User to be updated is not registered.");
+				return userDetailsObject;
+			}
+
+			// insert queries
+			String updatQuery = "UPDATE UserDetails set username = '"
+					+ userDetailsObject.getUserName() + "' , useraddress = '"
+					+ userDetailsObject.getUserAddress()
+					+ "' WHERE telephonenumber = '"
+					+ userDetailsObject.getTelephoneNumber() + "'";
+
+			// create statement
+			Statement statement = sqlConnection
+					.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+							ResultSet.CONCUR_UPDATABLE);
+
+			// set auto commit false
+			sqlConnection.setAutoCommit(false);
+
+			// add queries
+			statement.addBatch(updatQuery);
+
+			// execute batch
+			statement.executeBatch();
+
+			// commit
+			sqlConnection.commit();
+
+			// close the connection
+			sqlConnection.close();
+
+			// user found
+			userDetailsObject.setMessage("User Details Successfully Updated.");
+
+		} catch (Exception exception) {
+			// print stack trace
+			exception.printStackTrace();
+
+			// set error message
+			userDetailsObject.setMessage(exception.getMessage());
+		}
+
+		// return user details
+		return userDetailsObject;
+	}
 }

@@ -133,6 +133,9 @@ public class RestClient {
 		} catch (IOException e) {
 			client.getConnectionManager().shutdown();
 			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
 		}
 		return response;
 	}
