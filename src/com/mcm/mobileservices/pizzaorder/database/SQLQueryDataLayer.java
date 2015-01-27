@@ -1174,6 +1174,24 @@ public class SQLQueryDataLayer {
 			// get SQL connection
 			Connection sqlConnection = SQLConnectionDatabase.getConnection();
 
+			// select query for selecting user name from database by passing
+			// telephone number
+			PreparedStatement preparedStatement = sqlConnection
+					.prepareStatement("SELECT PIZZANAME FROM PizzaDetails WHERE PIZZANAME = ? ");
+
+			// set the telephone number
+			preparedStatement.setString(1, pizzaDetailsObject.getPizzaName());
+
+			// execute query
+			ResultSet resultSet = preparedStatement.executeQuery();
+
+			// check for empty result set
+			if (!resultSet.next()) {
+				pizzaDetailsObject
+						.setMessage("Pizza already present in database.");
+				return pizzaDetailsObject;
+			}
+
 			// insert queries
 			String insertQuery = "INSERT INTO PizzaDetails (PIZZANAME,PIZZADESCRIPTION,PIZZACONTENT,PIZZAACTIVE) VALUES ( '"
 					+ pizzaDetailsObject.getPizzaName()
