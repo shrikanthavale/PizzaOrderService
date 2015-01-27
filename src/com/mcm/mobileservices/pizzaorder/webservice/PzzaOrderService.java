@@ -11,6 +11,7 @@ import javax.ws.rs.core.MediaType;
 
 import com.google.gson.Gson;
 import com.mcm.mobileservices.pizzaorder.database.SQLQueryDataLayer;
+import com.mcm.mobileservices.pizzaorder.entities.PizzaDetails;
 import com.mcm.mobileservices.pizzaorder.entities.UserDetails;
 
 /**
@@ -405,6 +406,32 @@ public class PzzaOrderService {
 
 		UserDetails userDetailsReturnedObject = sqlQueryDataLayer
 				.updateUserDetails(userDetailsObject);
+
+		// return success string if everything is ok, or an exception is thrown
+		// automatically.
+		return gson.toJson(userDetailsReturnedObject);
+
+	}
+
+	/**
+	 * web service for searching pizza details in database.
+	 * 
+	 * @param pizzaName
+	 *            pizza name to be searched in database
+	 * 
+	 * @return returned JSON string of saved object
+	 * 
+	 */
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/searchpizzadetails")
+	public String searchPizzaDetails(@QueryParam("pizzaname") String pizzaName) {
+
+		// convert to object
+		Gson gson = new Gson();
+
+		PizzaDetails userDetailsReturnedObject = sqlQueryDataLayer
+				.searchPizzaDetails(pizzaName);
 
 		// return success string if everything is ok, or an exception is thrown
 		// automatically.

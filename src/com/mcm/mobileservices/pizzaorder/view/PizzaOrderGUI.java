@@ -27,6 +27,7 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
 import com.mcm.mobileservices.pizzaorder.controller.PizzaOrderController;
+import com.mcm.mobileservices.pizzaorder.entities.PizzaDetails;
 import com.mcm.mobileservices.pizzaorder.entities.UserDetails;
 
 public class PizzaOrderGUI extends JFrame implements Observer {
@@ -37,11 +38,18 @@ public class PizzaOrderGUI extends JFrame implements Observer {
 	private JTextField txtNameOfPerson;
 	private JTextArea txtrAddress;
 	private PizzaOrderController pizzaOrderController;
-	private JLabel lblMessageLabel;
+	private JLabel lblUserDetailsMessageLabel;
 	private JButton btnSaveDetails;
 	private JButton btnSearchDetails;
 	private JButton btnUpdateDetails;
 	private JTextField txtPizzaName;
+	private JTextArea txtrPizzaDescription;
+	private JTextArea txtrPizzaContents;
+	private JCheckBox chckbxPizzaActive;
+	private JButton btnSearchPizza;
+	private JButton btnSavePizza;
+	private JButton btnUpdatePizza;
+	private JLabel lblPizzaDetailsMessageLabel;
 
 	/**
 	 * Launch the application.
@@ -149,7 +157,7 @@ public class PizzaOrderGUI extends JFrame implements Observer {
 						pizzaOrderController.submitUserDetails(userDetails);
 					}
 				}.start();
-				lblMessageLabel
+				lblUserDetailsMessageLabel
 						.setText("Please Wait .. User is getting registered");
 				btnSaveDetails.setEnabled(false);
 				btnSearchDetails.setEnabled(false);
@@ -166,7 +174,7 @@ public class PizzaOrderGUI extends JFrame implements Observer {
 								.searchUserDetails(txtTelephoneNumber.getText());
 					}
 				}.start();
-				lblMessageLabel
+				lblUserDetailsMessageLabel
 						.setText("Please Wait .. User is getting searched");
 				btnSearchDetails.setEnabled(false);
 				btnSaveDetails.setEnabled(false);
@@ -198,7 +206,7 @@ public class PizzaOrderGUI extends JFrame implements Observer {
 						pizzaOrderController.updateUserDetails(userDetails);
 					}
 				}.start();
-				lblMessageLabel
+				lblUserDetailsMessageLabel
 						.setText("Please Wait .. User Details are getting updated");
 				btnSearchDetails.setEnabled(false);
 				btnSaveDetails.setEnabled(false);
@@ -212,15 +220,16 @@ public class PizzaOrderGUI extends JFrame implements Observer {
 		gbc_btnUpdateDetails.gridy = 0;
 		panel_4.add(btnUpdateDetails, gbc_btnUpdateDetails);
 
-		lblMessageLabel = new JLabel("");
-		lblMessageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		GridBagConstraints gbc_lblMessageLabel = new GridBagConstraints();
-		gbc_lblMessageLabel.gridwidth = 3;
-		gbc_lblMessageLabel.fill = GridBagConstraints.BOTH;
-		gbc_lblMessageLabel.insets = new Insets(0, 0, 0, 5);
-		gbc_lblMessageLabel.gridx = 0;
-		gbc_lblMessageLabel.gridy = 1;
-		panel_4.add(lblMessageLabel, gbc_lblMessageLabel);
+		lblUserDetailsMessageLabel = new JLabel("");
+		lblUserDetailsMessageLabel
+				.setHorizontalAlignment(SwingConstants.CENTER);
+		GridBagConstraints gbc_lblUserDetailsMessageLabel = new GridBagConstraints();
+		gbc_lblUserDetailsMessageLabel.gridwidth = 3;
+		gbc_lblUserDetailsMessageLabel.fill = GridBagConstraints.BOTH;
+		gbc_lblUserDetailsMessageLabel.insets = new Insets(0, 0, 0, 5);
+		gbc_lblUserDetailsMessageLabel.gridx = 0;
+		gbc_lblUserDetailsMessageLabel.gridy = 1;
+		panel_4.add(lblUserDetailsMessageLabel, gbc_lblUserDetailsMessageLabel);
 
 		JPanel panel_1 = new JPanel();
 		tabbedPane.addTab("Pizza Details", null, panel_1, null);
@@ -249,7 +258,7 @@ public class PizzaOrderGUI extends JFrame implements Observer {
 		JLabel lblNewLabel_1 = new JLabel("Pizza Description");
 		panel_5.add(lblNewLabel_1);
 
-		JTextArea txtrPizzaDescription = new JTextArea();
+		txtrPizzaDescription = new JTextArea();
 		txtrPizzaDescription.setWrapStyleWord(true);
 		txtrPizzaDescription.setLineWrap(true);
 		txtrPizzaDescription.setText("Pizza Description");
@@ -258,7 +267,7 @@ public class PizzaOrderGUI extends JFrame implements Observer {
 		JLabel lblPizzaContents = new JLabel("Pizza Contents");
 		panel_5.add(lblPizzaContents);
 
-		JTextArea txtrPizzaContents = new JTextArea();
+		txtrPizzaContents = new JTextArea();
 		txtrPizzaContents.setLineWrap(true);
 		txtrPizzaContents.setWrapStyleWord(true);
 		txtrPizzaContents.setText("Pizza Contents");
@@ -267,7 +276,7 @@ public class PizzaOrderGUI extends JFrame implements Observer {
 		JLabel lblPizzaActive = new JLabel("Pizza Active");
 		panel_5.add(lblPizzaActive);
 
-		JCheckBox chckbxPizzaActive = new JCheckBox("");
+		chckbxPizzaActive = new JCheckBox("");
 		panel_5.add(chckbxPizzaActive);
 
 		JPanel panel_6 = new JPanel();
@@ -280,7 +289,22 @@ public class PizzaOrderGUI extends JFrame implements Observer {
 		gbl_panel_6.rowWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
 		panel_6.setLayout(gbl_panel_6);
 
-		JButton btnSearchPizza = new JButton("Search Pizza");
+		btnSearchPizza = new JButton("Search Pizza");
+		btnSearchPizza.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				new Thread() {
+					public void run() {
+						pizzaOrderController.searchPizzaDetails(txtPizzaName
+								.getText());
+					}
+				}.start();
+				lblPizzaDetailsMessageLabel
+						.setText("Please Wait .. Pizza is getting searched");
+				btnSearchPizza.setEnabled(false);
+				btnUpdatePizza.setEnabled(false);
+				btnSavePizza.setEnabled(false);
+			}
+		});
 		GridBagConstraints gbc_btnSearchPizza = new GridBagConstraints();
 		gbc_btnSearchPizza.fill = GridBagConstraints.BOTH;
 		gbc_btnSearchPizza.insets = new Insets(0, 0, 5, 5);
@@ -288,7 +312,7 @@ public class PizzaOrderGUI extends JFrame implements Observer {
 		gbc_btnSearchPizza.gridy = 0;
 		panel_6.add(btnSearchPizza, gbc_btnSearchPizza);
 
-		JButton btnSavePizza = new JButton("Save Pizza");
+		btnSavePizza = new JButton("Save Pizza");
 		GridBagConstraints gbc_btnSavePizza = new GridBagConstraints();
 		gbc_btnSavePizza.fill = GridBagConstraints.BOTH;
 		gbc_btnSavePizza.insets = new Insets(0, 0, 5, 5);
@@ -296,7 +320,7 @@ public class PizzaOrderGUI extends JFrame implements Observer {
 		gbc_btnSavePizza.gridy = 0;
 		panel_6.add(btnSavePizza, gbc_btnSavePizza);
 
-		JButton btnUpdatePizza = new JButton("Update Pizza");
+		btnUpdatePizza = new JButton("Update Pizza");
 		GridBagConstraints gbc_btnUpdatePizza = new GridBagConstraints();
 		gbc_btnUpdatePizza.fill = GridBagConstraints.BOTH;
 		gbc_btnUpdatePizza.insets = new Insets(0, 0, 5, 0);
@@ -304,15 +328,17 @@ public class PizzaOrderGUI extends JFrame implements Observer {
 		gbc_btnUpdatePizza.gridy = 0;
 		panel_6.add(btnUpdatePizza, gbc_btnUpdatePizza);
 
-		JLabel label = new JLabel("");
-		label.setHorizontalAlignment(SwingConstants.CENTER);
-		GridBagConstraints gbc_label = new GridBagConstraints();
-		gbc_label.insets = new Insets(0, 0, 0, 5);
-		gbc_label.fill = GridBagConstraints.BOTH;
-		gbc_label.gridwidth = 3;
-		gbc_label.gridx = 0;
-		gbc_label.gridy = 1;
-		panel_6.add(label, gbc_label);
+		lblPizzaDetailsMessageLabel = new JLabel("");
+		lblPizzaDetailsMessageLabel
+				.setHorizontalAlignment(SwingConstants.CENTER);
+		GridBagConstraints gbc_lblPizzaDetailsMessageLabel = new GridBagConstraints();
+		gbc_lblPizzaDetailsMessageLabel.insets = new Insets(0, 0, 0, 5);
+		gbc_lblPizzaDetailsMessageLabel.fill = GridBagConstraints.BOTH;
+		gbc_lblPizzaDetailsMessageLabel.gridwidth = 3;
+		gbc_lblPizzaDetailsMessageLabel.gridx = 0;
+		gbc_lblPizzaDetailsMessageLabel.gridy = 1;
+		panel_6.add(lblPizzaDetailsMessageLabel,
+				gbc_lblPizzaDetailsMessageLabel);
 
 		JPanel panel_2 = new JPanel();
 		panel_2.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null,
@@ -324,14 +350,30 @@ public class PizzaOrderGUI extends JFrame implements Observer {
 	public void update(Observable o, Object arg) {
 
 		if (arg instanceof UserDetails) {
+
 			UserDetails userDetails = (UserDetails) arg;
 			txtTelephoneNumber.setText(userDetails.getTelephoneNumber());
 			txtNameOfPerson.setText(userDetails.getUserName());
 			txtrAddress.setText(userDetails.getUserAddress());
-			lblMessageLabel.setText(userDetails.getMessage());
+			lblUserDetailsMessageLabel.setText(userDetails.getMessage());
 			btnSaveDetails.setEnabled(true);
 			btnSearchDetails.setEnabled(true);
 			btnUpdateDetails.setEnabled(true);
+
+		} else if (arg instanceof PizzaDetails) {
+
+			PizzaDetails pizzaDetails = (PizzaDetails) arg;
+			txtPizzaName.setText(pizzaDetails.getPizzaName());
+			txtrPizzaDescription.setText(pizzaDetails.getPizzaDescription());
+			txtrPizzaContents.setText(pizzaDetails.getPizzaContent());
+			chckbxPizzaActive
+					.setSelected(pizzaDetails.isActive() != null ? pizzaDetails
+							.isActive() : false);
+			lblPizzaDetailsMessageLabel.setText(pizzaDetails.getMessage());
+			btnSearchPizza.setEnabled(true);
+			btnSavePizza.setEnabled(true);
+			btnUpdatePizza.setEnabled(true);
+
 		}
 	}
 }

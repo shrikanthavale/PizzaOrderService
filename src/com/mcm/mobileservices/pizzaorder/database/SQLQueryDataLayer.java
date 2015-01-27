@@ -10,6 +10,7 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.mcm.mobileservices.pizzaorder.entities.PizzaDetails;
 import com.mcm.mobileservices.pizzaorder.entities.UserDetails;
 
 /**
@@ -18,7 +19,7 @@ import com.mcm.mobileservices.pizzaorder.entities.UserDetails;
  * methods for performing various operations. Ultimately results from this class
  * are returned back to web service layer.
  * 
- * @author Shrikant Havale
+ * @author Mobile Services Team
  * 
  */
 public class SQLQueryDataLayer {
@@ -1081,5 +1082,76 @@ public class SQLQueryDataLayer {
 
 		// return user details
 		return userDetailsObject;
+	}
+
+	/**
+	 * Method actually hitting database and searching pizza details in database.
+	 * 
+	 * @param pizzaName
+	 *            - string pizza name sent from UI, to check if pizza is in
+	 *            database details and fetch its details
+	 * @return the same object if searching is succeeded
+	 */
+	public PizzaDetails searchPizzaDetails(String pizzaName) {
+
+		// for returning pizza details
+		PizzaDetails pizzaDetails = new PizzaDetails();
+		pizzaDetails.setPizzaName(pizzaName);
+		pizzaDetails.setPizzaDescription("");
+		pizzaDetails.setPizzaContent("");
+		pizzaDetails.setActive(null);
+
+		try {
+
+			// get SQL connection
+			Connection sqlConnection = SQLConnectionDatabase.getConnection();
+
+			// select query for selecting pizza details from database by passing
+			// pizza name
+			PreparedStatement preparedStatement = sqlConnection
+					.prepareStatement("SELECT PIZZANAME,PIZZADESCRIPTION,PIZZACONTENT,PIZZAACTIVE FROM PizzaDetails WHERE UPPER(PIZZANAME) = ? ");
+
+			// set the telephone number
+			preparedStatement.setString(1, pizzaName.toUpperCase());
+
+			// execute query
+			ResultSet resultSet = preparedStatement.executeQuery();
+
+			// check for empty result set
+			if (!resultSet.next()) {
+				pizzaDetails.setMessage("Pizza Not Found.");
+				return pizzaDetails;
+			}
+
+			// move the cursor before the result set
+			resultSet.beforeFirst();
+
+			// iterate through result set and get data
+			while (resultSet.next()) {
+				pizzaDetails.setPizzaName(resultSet.getString("PIZZANAME"));
+				pizzaDetails.setPizzaDescription(resultSet
+						.getString("PIZZADESCRIPTION"));
+				pizzaDetails.setPizzaContent(resultSet
+						.getString("PIZZACONTENT"));
+				pizzaDetails.setActive(resultSet.getString("PIZZAACTIVE")
+						.equalsIgnoreCase("Y") ? true : false);
+			}
+
+			// close the connection
+			sqlConnection.close();
+
+			// pizza found
+			pizzaDetails.setMessage("Pizza Details Found.");
+
+		} catch (Exception exception) {
+			// print stack trace
+			exception.printStackTrace();
+
+			// set error message
+			pizzaDetails.setMessage(exception.getMessage());
+		}
+
+		// return pizza details
+		return pizzaDetails;
 	}
 }

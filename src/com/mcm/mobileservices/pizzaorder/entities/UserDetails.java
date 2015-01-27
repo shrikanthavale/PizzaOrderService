@@ -4,7 +4,7 @@
 package com.mcm.mobileservices.pizzaorder.entities;
 
 /**
- * @author Shrikant Havale Jan 25, 2015
+ * @author Mobile Services Team Jan 25, 2015
  * 
  */
 public class UserDetails {
