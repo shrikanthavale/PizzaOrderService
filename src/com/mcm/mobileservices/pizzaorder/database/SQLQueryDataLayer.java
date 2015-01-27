@@ -1177,16 +1177,17 @@ public class SQLQueryDataLayer {
 			// select query for selecting user name from database by passing
 			// telephone number
 			PreparedStatement preparedStatement = sqlConnection
-					.prepareStatement("SELECT PIZZANAME FROM PizzaDetails WHERE PIZZANAME = ? ");
+					.prepareStatement("SELECT PIZZANAME FROM PizzaDetails WHERE UPPER(PIZZANAME) = ? ");
 
 			// set the telephone number
-			preparedStatement.setString(1, pizzaDetailsObject.getPizzaName());
+			preparedStatement.setString(1, pizzaDetailsObject.getPizzaName()
+					.toUpperCase());
 
 			// execute query
 			ResultSet resultSet = preparedStatement.executeQuery();
 
 			// check for empty result set
-			if (!resultSet.next()) {
+			if (resultSet.next()) {
 				pizzaDetailsObject
 						.setMessage("Pizza already present in database.");
 				return pizzaDetailsObject;
