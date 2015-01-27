@@ -1221,4 +1221,75 @@ public class SQLQueryDataLayer {
 		return pizzaDetailsObject;
 
 	}
+
+	public PizzaDetails updatePizzaDetails(PizzaDetails pizzaDetailsObject) {
+
+		try {
+
+			// get SQL connection
+			Connection sqlConnection = SQLConnectionDatabase.getConnection();
+
+			// select query for selecting user name from database by passing
+			// telephone number
+			PreparedStatement preparedStatement = sqlConnection
+					.prepareStatement("SELECT PIZZANAME FROM PizzaDetails WHERE PIZZANAME = ? ");
+
+			// set the telephone number
+			preparedStatement.setString(1, pizzaDetailsObject.getPizzaName());
+
+			// execute query
+			ResultSet resultSet = preparedStatement.executeQuery();
+
+			// check for empty result set
+			if (!resultSet.next()) {
+				pizzaDetailsObject
+						.setMessage("Pizza to be updated is not present in database.");
+				return pizzaDetailsObject;
+			}
+
+			// insert queries
+			String updatQuery = "UPDATE PizzaDetails set PIZZADESCRIPTION = '"
+					+ pizzaDetailsObject.getPizzaDescription()
+					+ "' , PIZZACONTENT = '"
+					+ pizzaDetailsObject.getPizzaContent()
+					+ "', PIZZAACTIVE = '"
+					+ (pizzaDetailsObject.isActive() ? "Y" : "N")
+					+ "' WHERE UPPER(PIZZANAME) = '"
+					+ pizzaDetailsObject.getPizzaName().toUpperCase() + "'";
+
+			// create statement
+			Statement statement = sqlConnection
+					.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+							ResultSet.CONCUR_UPDATABLE);
+
+			// set auto commit false
+			sqlConnection.setAutoCommit(false);
+
+			// add queries
+			statement.addBatch(updatQuery);
+
+			// execute batch
+			statement.executeBatch();
+
+			// commit
+			sqlConnection.commit();
+
+			// close the connection
+			sqlConnection.close();
+
+			// user found
+			pizzaDetailsObject
+					.setMessage("Pizza Details Successfully Updated.");
+
+		} catch (Exception exception) {
+			// print stack trace
+			exception.printStackTrace();
+
+			// set error message
+			pizzaDetailsObject.setMessage(exception.getMessage());
+		}
+
+		// return user details
+		return pizzaDetailsObject;
+	}
 }
