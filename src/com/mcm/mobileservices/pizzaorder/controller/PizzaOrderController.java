@@ -181,4 +181,46 @@ public class PizzaOrderController extends Observable {
 		notifyObservers(pizzaDetails);
 
 	}
+
+	public void submitPizzaDetails(PizzaDetails pizzaDetails) {
+
+		String url = "http://tomcat7-shrikanthavale.rhcloud.com/PizzaOrderService/rest/pizzaorder/savepizzadetails";
+		String dummyURL = "http://localhost:8086/PizzaOrderService/rest/pizzaorder/savepizzadetails";
+
+		// Gson object
+		Gson gson = new Gson();
+
+		// gson string
+		String gsonString = gson.toJson(pizzaDetails);
+
+		// create rest client
+		RestClient restClient = new RestClient(url);
+
+		// send the json string to webservice
+		restClient.AddParam("pizzadetails", gsonString);
+		try {
+
+			// get the json string
+			String pizzaDetailsJSONString = restClient
+					.execute(RequestMethod.GET);
+
+			// convert back to object
+			pizzaDetails = gson.fromJson(pizzaDetailsJSONString,
+					PizzaDetails.class);
+
+		} catch (Exception e) {
+
+			pizzaDetails
+					.setMessage("Something went wrong ... Please contact Admin");
+
+			e.printStackTrace();
+		}
+
+		// to trigger notification
+		setChanged();
+
+		// Notify all observers
+		notifyObservers(pizzaDetails);
+
+	}
 }

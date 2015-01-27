@@ -313,6 +313,25 @@ public class PizzaOrderGUI extends JFrame implements Observer {
 		panel_6.add(btnSearchPizza, gbc_btnSearchPizza);
 
 		btnSavePizza = new JButton("Save Pizza");
+		btnSavePizza.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				final PizzaDetails pizzaDetails = new PizzaDetails();
+				pizzaDetails.setPizzaName(txtPizzaName.getText());
+				pizzaDetails.setPizzaDescription(txtrPizzaDescription.getText());
+				pizzaDetails.setPizzaContent(txtrPizzaContents.getText());
+				pizzaDetails.setActive(chckbxPizzaActive.isSelected());
+				new Thread() {
+					public void run() {
+						pizzaOrderController.submitPizzaDetails(pizzaDetails);
+					}
+				}.start();
+				lblPizzaDetailsMessageLabel
+						.setText("Please Wait .. Pizza is getting added to database");
+				btnSavePizza.setEnabled(false);
+				btnSearchPizza.setEnabled(false);
+				btnUpdatePizza.setEnabled(false);
+			}
+		});
 		GridBagConstraints gbc_btnSavePizza = new GridBagConstraints();
 		gbc_btnSavePizza.fill = GridBagConstraints.BOTH;
 		gbc_btnSavePizza.insets = new Insets(0, 0, 5, 5);

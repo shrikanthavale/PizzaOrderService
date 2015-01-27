@@ -259,6 +259,10 @@ public class SQLQueryDataLayer {
 			// iterate through result set and get data
 			while (resultSet.next()) {
 
+				// add only 5 pizzas
+				if (counter > 5) {
+					break;
+				}
 				String pizzaName = resultSet.getString("PIZZANAME");
 				int pizzaId = resultSet.getInt("PIZZAID");
 				tempHashMap.put(pizzaId, counter + ":" + pizzaName);
@@ -1153,5 +1157,68 @@ public class SQLQueryDataLayer {
 
 		// return pizza details
 		return pizzaDetails;
+	}
+
+	/**
+	 * Method actually hitting database and saving pizza details in database.
+	 * 
+	 * @param pizzaDetailsObject
+	 *            - Object sent from UI, originally in JSON converted to entity
+	 *            format
+	 * @return the same object if saving is succeeded
+	 */
+	public PizzaDetails savePizzaDetails(PizzaDetails pizzaDetailsObject) {
+
+		try {
+
+			// get SQL connection
+			Connection sqlConnection = SQLConnectionDatabase.getConnection();
+
+			// insert queries
+			String insertQuery = "INSERT INTO PizzaDetails (PIZZANAME,PIZZADESCRIPTION,PIZZACONTENT,PIZZAACTIVE) VALUES ( '"
+					+ pizzaDetailsObject.getPizzaName()
+					+ "' , '"
+					+ pizzaDetailsObject.getPizzaDescription()
+					+ "' ,  '"
+					+ pizzaDetailsObject.getPizzaContent()
+					+ "', '"
+					+ (pizzaDetailsObject.isActive() ? "Y" : "N") + "')";
+
+			// create statement
+			Statement statement = sqlConnection
+					.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+							ResultSet.CONCUR_UPDATABLE);
+
+			// set auto commit false
+			sqlConnection.setAutoCommit(false);
+
+			// add queries
+			statement.addBatch(insertQuery);
+
+			// execute batch
+			statement.executeBatch();
+
+			// commit
+			sqlConnection.commit();
+
+			// close the connection
+			sqlConnection.close();
+
+			// user successfully registered
+			pizzaDetailsObject
+					.setMessage("Pizza Successfully Added in Database");
+
+		} catch (Exception exception) {
+
+			// set error message
+			pizzaDetailsObject.setMessage(exception.getMessage());
+
+			// print stack trace
+			exception.printStackTrace();
+
+		}
+
+		return pizzaDetailsObject;
+
 	}
 }

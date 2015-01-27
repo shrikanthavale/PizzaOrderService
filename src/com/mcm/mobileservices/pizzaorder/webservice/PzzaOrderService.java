@@ -439,4 +439,32 @@ public class PzzaOrderService {
 
 	}
 
+	/**
+	 * web service for saving pizza details in database.
+	 * 
+	 * @param pizzaDetailsJsonString
+	 *            pizza object specifically formatted in JSON format
+	 * 
+	 * @return returned JSON string of saved object
+	 * 
+	 */
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/savepizzadetails")
+	public String savePizzaDetails(
+			@QueryParam("pizzadetails") String pizzaDetailsJsonString) {
+
+		// convert to object
+		Gson gson = new Gson();
+		PizzaDetails pizzaDetailsObject = gson.fromJson(pizzaDetailsJsonString,
+				PizzaDetails.class);
+
+		PizzaDetails pizzaDetailsReturnedObject = sqlQueryDataLayer
+				.savePizzaDetails(pizzaDetailsObject);
+
+		// return success string if everything is ok, or an exception is thrown
+		// automatically.
+		return gson.toJson(pizzaDetailsReturnedObject);
+
+	}
 }
